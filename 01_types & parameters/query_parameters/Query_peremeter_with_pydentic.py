@@ -41,7 +41,8 @@ class User(BaseModel):
 
 @routes.put("/items/{item_id}")
 async def update_item(
-    item_id: int, item: Item, user: Annotated[User , Query()], importance: Annotated[int, Body()]
+    item_id: int, item: Item, user: Annotated[User , Body()], importance: Annotated[int, Body()]
 ):
     results = {"item_id": item_id, "item": item, "user": user, "importance": importance}
     return results
+

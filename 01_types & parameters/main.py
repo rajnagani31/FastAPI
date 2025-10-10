@@ -6,15 +6,28 @@ from class_enum_with_path_parameters import router
 from query_parameters.routes import routes as query_params
 from query_parameters.Query_peremeter_with_pydentic import routes as pydentic_validation
 from nested_parapeters.routes import routes as nested_model
+from form_data.form import routes as user_details
+from database.database_confige import engine
+from model import user
+from model.user import Base
+
 class Name(BaseModel):
     user_id : int
     name : str
+
+# data_base config
+user.Base.metadata.create_all(bind = engine)
+
 
 app = FastAPI()
 app.include_router(router)
 app.include_router(query_params)
 app.include_router(pydentic_validation)
 app.include_router(nested_model)
+app.include_router(user_details)
+
+
+
 
 # Tuple
 def process_items(*items: tuple[str]):
