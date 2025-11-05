@@ -25,3 +25,10 @@ print(list(set(data)))
 
 
 hash((1,2,3))
+
+import hashlib
+import requests
+
+
+# user ip address here print
+# print(requests.)
