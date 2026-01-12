@@ -21,7 +21,6 @@ async def read_details(data : comman_need):
     return data
 
 # @get_query_param  
-@app.post("/simple_endpoint")
 async def simple_endpoint(data : Annotated[UserBase, Depends(UserBase),Body()]):
     return {"data": data}
 

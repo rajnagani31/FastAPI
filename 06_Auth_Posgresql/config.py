@@ -9,6 +9,8 @@ logger = logging.getLogger(__name__)
 class BaseConfig(BaseSettings):
     ENV_STATE: str = "dev"
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    USER : str | None = None
+    SECRET_KEY : str | None = None
 
 
 class GlobalConfig(BaseConfig):

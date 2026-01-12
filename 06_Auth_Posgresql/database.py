@@ -1,11 +1,10 @@
 import sqlalchemy
 import databases
 
-from model.user import user_register , validate_token
+from model.user import user_register , validate_token, student_details , course_details,markes_details
 from sqlalchemy.engine.url import make_url
 from sqlalchemy_utils import database_exists, create_database
 from config import config   
-
 
 
 
@@ -14,6 +13,9 @@ metadata =sqlalchemy.MetaData()
 
 user_details_table = user_register(metadata)
 user_jwt_token_table = validate_token(metadata)
+student_details_table = student_details(metadata)
+course_details_table = course_details(metadata) 
+markes_details_table = markes_details(metadata)
 
 
 url = make_url(config.DB_URL)
@@ -32,3 +34,5 @@ engine = sqlalchemy.create_engine(
 )
 metadata.create_all(engine)
 print("✅ Tables created successfully.")
+print(config.DB_URL)
+print(config.USER)
