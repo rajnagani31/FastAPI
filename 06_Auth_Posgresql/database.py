@@ -1,7 +1,7 @@
 import sqlalchemy
 import databases
 
-from model.user import user_register , validate_token, student_details , course_details,markes_details
+from model.user import user_register, new_student_details , course_details,markes_details, new_validate_token
 from sqlalchemy.engine.url import make_url
 from sqlalchemy_utils import database_exists, create_database
 from config import config   
@@ -12,10 +12,10 @@ from config import config
 metadata =sqlalchemy.MetaData()
 
 user_details_table = user_register(metadata)
-user_jwt_token_table = validate_token(metadata)
-student_details_table = student_details(metadata)
+student_details_table = new_student_details(metadata)
 course_details_table = course_details(metadata) 
 markes_details_table = markes_details(metadata)
+new_validate_token_table = new_validate_token(metadata)
 
 
 url = make_url(config.DB_URL)

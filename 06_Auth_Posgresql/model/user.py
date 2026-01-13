@@ -22,15 +22,16 @@ def user_register(metadata):
     )
     return user_table
 
-def validate_token(metadata):
+
+def new_validate_token(metadata):
     user_token=Table(
-    "user_token",
+    "new_user_token",
     metadata,
     Column('id',Integer,primary_key=True, autoincrement=True),
-    Column('user_id',Integer,ForeignKey("user_details.id")),
+    Column('user_id',Integer,ForeignKey("user_details.id"),nullable=False),
     Column("token",String(255),nullable=False),
-    Column("is_deleted",Boolean,nullable=True),
-    Column('token_type',String(50),nullable=True),
+    Column("is_deleted",Boolean,server_default='false'),
+    Column('token_type',String(50)),
     Column('create_at',DateTime(timezone=True),server_default=func.now()),
     Column('updated_at',DateTime(timezone=True),server_default=func.now()),
     UniqueConstraint('user_id', 'token_type', name='uq_user_token_user_id_token_type')
@@ -38,17 +39,17 @@ def validate_token(metadata):
 
     return user_token
 
-def student_details(metadata):
+def new_student_details(metadata):
     student_table=Table(
-    "student_details",
+    "new_student_details",
     metadata,
     Column('id',Integer , primary_key = True , autoincrement=True),
-    Column('user_id',Integer,ForeignKey("user_details.id")),
+    Column('user_id',Integer,ForeignKey("user_details.id"),nullable=False),
     Column('student_name',String(50), nullable=True),
     Column('age',Integer,nullable=True),
     Column('address',String(100),nullable=True),
-    Column('create_at',DateTime(timezone=True),server_default=func.now(),nullable=True),
-    Column('updated_at',DateTime(timezone=True),server_default=func.now(),nullable=True),
+    Column('create_at',DateTime(timezone=True),server_default=func.now()),
+    Column('updated_at',DateTime(timezone=True),server_default=func.now(),onupdate=func.now()),
     )
 
     return student_table
@@ -58,7 +59,7 @@ def course_details(metadata):
     "course_details",
     metadata,
     Column('id',Integer , primary_key = True , autoincrement=True),
-    Column('user_id',Integer,ForeignKey("user_details.id")),
+    Column('user_id',Integer,ForeignKey("user_details.id"),nullable=False),
     Column('course_name',String(50), nullable=True),
     Column('course_duration',String(50),nullable=True),
     Column('course_fee',Float,nullable=True),
@@ -73,8 +74,8 @@ def markes_details(metadata):
     "markes_details",
     metadata,
     Column('id',Integer , primary_key = True , autoincrement=True),
-    Column('student_id',Integer,ForeignKey("student_details.id")),
-    Column('course_id',Integer,ForeignKey("course_details.id")),
+    Column('student_id',Integer,ForeignKey("student_details.id"),nullable=False),
+    Column('course_id',Integer,ForeignKey("course_details.id"),nullable=False),
     Column('math',Float,nullable=True),
     Column('science',Float,nullable=True),
     Column('history',Float,nullable=True),

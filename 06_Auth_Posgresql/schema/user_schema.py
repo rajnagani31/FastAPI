@@ -1,5 +1,6 @@
-from pydantic import BaseModel , EmailStr
+from pydantic import BaseModel , EmailStr, field_validator,field_serializer,Field
 from enum import Enum   
+from typing import Optional
 
 class UserRegister(BaseModel):
     user_name : str
@@ -16,8 +17,10 @@ class LoginUser(BaseModel):
 
 class studentDetails(BaseModel):
     student_name : str
-    age : int
-    address : str | None = None
+    age : int | None = None
+    address : str | None = None 
+
+
 
 
 
@@ -27,7 +30,6 @@ class CourseNameEnum(str, Enum):
     GENAI = "GenAI"
 
 class CourseDetails(BaseModel):
-    user_id : int
     course_name : CourseNameEnum
     course_duration : str
     course_fee : float

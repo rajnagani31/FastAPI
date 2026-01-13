@@ -4,7 +4,7 @@ from sqlalchemy import select, update ,delete,and_,or_
 from sqlalchemy.dialects.postgresql import insert  
 
 from database import database
-from database import user_details_table,user_jwt_token_table,student_details_table,markes_details_table,course_details_table
+from database import user_details_table,student_details_table,markes_details_table,course_details_table,new_validate_token_table
 import hashlib
 from utils import access_token,refresh_token
 
@@ -68,7 +68,7 @@ async def user_login(request):
         create_access_token = access_token(user_id)
         create_refresh_token = refresh_token(user_id)
 
-        stmt = insert(user_jwt_token_table).values(
+        stmt = insert(new_validate_token_table).values(
             user_id = user_id,  
             token = create_access_token,
             is_deleted = False,
@@ -105,23 +105,85 @@ async def user_login(request):
         )
     
     
-async def create_student_details(student_data): 
+async def create_student_details(student_data,current_user): 
     "create student details controller"
 
     try:
-        user_id = student_data.user_id
+        user_id = current_user
         student_name = student_data.student_name
         age = student_data.age
         address = student_data.address
 
+        print("User ID in controller:", user_id)  # Debugging line to check the user_id value
+        print("Student Name:", student_name)  # Debugging line to check the student_name value
+        print("Age:", age)  # Debugging line to check the age value
+        print("Address:", address)  # Debugging line to check the address value
+        
         query = student_details_table.insert().values(
-            user_id = user_id,
+            user_id = int(user_id),
             student_name = student_name,
             age = age,
-            address = address,
+            address = address
         )
+        student_data = await database.execute(query)
 
-        await database.execute(query)
-        return {"message": "Student details created successfully"}
+        data = {
+            "user_id": user_id,
+            "student_name": student_name,
+            "age": age,
+            "address": address
+        }
+        return JSONResponse(content=data,status_code=status.HTTP_201_CREATED)
     except Exception as e:
-        return e
+        return str(e)
+    
+
+async def get_student_data(current_user ):
+    user_id = int(current_user)
+
+    query = student_details_table.select().where(student_details_table.c.user_id == user_id , student_details_table.c.student_name == "rajjjjj").limit(5).offset(5)
+    student = await database.fetch_all(query)
+    print("Fetched student data:", student)  # Debugging line to check fetched data
+
+
+    student_datas = [
+        {
+            "id": row['id'],
+            "user_id": row['user_id'],  
+            "student_name": row['student_name'],
+            "age": row['age'],
+            "address": row['address'],
+            "created_at": str(row['create_at']),
+            "updated_at": str(row['updated_at'])
+        }
+        for row in student
+    ]
+        
+    # return JSONResponse(content=student_datas[:5], status_code=status.HTTP_200_OK)
+    return JSONResponse(content=student_datas, status_code=status.HTTP_200_OK)
+
+async def student_course_details(course_details, current_user):
+    try:
+
+        user_id = int(current_user)
+        course = course_details.course_name
+        duration = course_details.course_duration
+        fee = course_details.course_fee
+
+        if not user_id:
+            return JSONResponse(content="User id not found",status=400)
+
+        query = course_details_table.insert().values(
+            user_id = user_id,
+            course_name = course,
+            course_duration = duration,
+            course_fee = fee
+        )
+        await database.execute(query)
+
+        return JSONResponse(content="course detail filout",status_code=201)
+    except Exception as e:
+        return JSONResponse(status_code=500,content=f'ERROR {str(e)}')
+    
+
+    
