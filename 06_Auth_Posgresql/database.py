@@ -1,7 +1,7 @@
 import sqlalchemy
 import databases
 
-from model.user import user_register, new_student_details , course_details,markes_details, new_validate_token
+from model.user import user_register, new_student_details , course_details, new_validate_token
 from sqlalchemy.engine.url import make_url
 from sqlalchemy_utils import database_exists, create_database
 from config import config   
@@ -14,7 +14,6 @@ metadata =sqlalchemy.MetaData()
 user_details_table = user_register(metadata)
 student_details_table = new_student_details(metadata)
 course_details_table = course_details(metadata) 
-markes_details_table = markes_details(metadata)
 new_validate_token_table = new_validate_token(metadata)
 
 

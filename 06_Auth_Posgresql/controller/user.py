@@ -1,10 +1,9 @@
 from fastapi import APIRouter , HTTPException , status, Request
 from fastapi.responses import JSONResponse
-from sqlalchemy import select, update ,delete,and_,or_
+from sqlalchemy import select, update ,delete,and_,or_,distinct,func
 from sqlalchemy.dialects.postgresql import insert  
-
 from database import database
-from database import user_details_table,student_details_table,markes_details_table,course_details_table,new_validate_token_table
+from database import user_details_table,student_details_table,course_details_table,new_validate_token_table
 import hashlib
 from utils import access_token,refresh_token
 
@@ -140,13 +139,45 @@ async def create_student_details(student_data,current_user):
 
 async def get_student_data(current_user ):
     user_id = int(current_user)
+    
+    if not user_id:
+        # return {"message": "user id not found", "status": 404}
+        return JSONResponse(content="User id not found",status_code=status.HTTP_404_NOT_FOUND)
 
-    query = student_details_table.select().where(student_details_table.c.user_id == user_id , student_details_table.c.student_name == "rajjjjj").limit(5).offset(5)
-    student = await database.fetch_all(query)
-    print("Fetched student data:", student)  # Debugging line to check fetched data
+    query = (
+        select(
+            student_details_table,
+            func.count().over().label('total_count')  # Window function to get total count
+        ).where(
+            student_details_table.c.user_id == user_id,
+            student_details_table.c.student_name == "rajjjjj"
+        )
+        .limit(5)
+        .offset(0)
+    )
 
+    distinctcount = (select(func.count(distinct(student_details_table.c.user_id)).label("count")).where(
+        student_details_table.c.user_id == user_id
+    ))
 
-    student_datas = [
+    distinctcountdata = await database.fetch_one(distinctcount)
+    print("COUNT:", distinctcountdata['count']) # or distinctcountdata[0]
+
+    result = await database.fetch_all(query)    
+    
+    if not result:
+        return JSONResponse(content="Student details not found",status_code=status.HTTP_404_NOT_FOUND)
+    print(result[0]['total_count'])
+    if result:
+        total_count = result[0]['total_count']
+    else:
+        total_count = 0
+    # students = [
+    #     {key: value for key, value in dict(row).items() if key != 'total_count'}
+    #     for row in result
+    # ] 
+
+    students =[
         {
             "id": row['id'],
             "user_id": row['user_id'],  
@@ -156,12 +187,16 @@ async def get_student_data(current_user ):
             "created_at": str(row['create_at']),
             "updated_at": str(row['updated_at'])
         }
-        for row in student
+        for row in result
     ]
         
     # return JSONResponse(content=student_datas[:5], status_code=status.HTTP_200_OK)
-    return JSONResponse(content=student_datas, status_code=status.HTTP_200_OK)
-
+    # return JSONResponse(content={"count": total_count, "data": students}, status_code=status.HTTP_200_OK)
+    return {
+        "total_count": total_count,
+        "distinct_count": distinctcountdata['count'],
+        "students": students
+    }
 async def student_course_details(course_details, current_user):
     try:
 
@@ -169,7 +204,6 @@ async def student_course_details(course_details, current_user):
         course = course_details.course_name
         duration = course_details.course_duration
         fee = course_details.course_fee
-
         if not user_id:
             return JSONResponse(content="User id not found",status=400)
 
@@ -186,4 +220,43 @@ async def student_course_details(course_details, current_user):
         return JSONResponse(status_code=500,content=f'ERROR {str(e)}')
     
 
+async def change_user_password(data, current_user):
+    try:
+        user_id = int(current_user)
+        new_password = data.new_password
+
+        hase_new_password = hashlib.md5(new_password.encode()).hexdigest()
+
+        query = update(user_details_table).where(
+            user_details_table.c.id == user_id
+        ).values(
+            password = hase_new_password
+        )
+
+        await database.execute(query)
+
+        return JSONResponse(content="Password changed successfully",status_code=200)
     
+    except Exception as e:
+        return JSONResponse(status_code=500,content=f'ERROR {str(e)}')
+    
+async def logout_user(current_user):
+    try:
+        user_id = int(current_user)
+        if not user_id:
+            return JSONResponse(content="User id not found",status=400)
+
+        query = update(new_validate_token_table).where(
+            new_validate_token_table.c.user_id == user_id,
+            new_validate_token_table.c.token_type == "access"
+        ).values(
+            is_deleted = True
+        )
+
+
+        await database.execute(query)
+
+        return JSONResponse(content="User logged out successfully",status_code=200)
+    
+    except (Exception,ValueError) as e:
+        return JSONResponse(status_code=500,content=f'ERROR {str(e)}')

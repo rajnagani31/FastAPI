@@ -68,21 +68,3 @@ def course_details(metadata):
     )
 
     return course_table
-
-def markes_details(metadata):
-    markes_table=Table(
-    "markes_details",
-    metadata,
-    Column('id',Integer , primary_key = True , autoincrement=True),
-    Column('student_id',Integer,ForeignKey("student_details.id"),nullable=False),
-    Column('course_id',Integer,ForeignKey("course_details.id"),nullable=False),
-    Column('math',Float,nullable=True),
-    Column('science',Float,nullable=True),
-    Column('history',Float,nullable=True),
-    Column('total_marks',Float,nullable=True),
-    Column('percentage',Float,nullable=True),
-    Column('create_at',DateTime(timezone=True),server_default=func.now(),nullable=True),
-    Column('updated_at',DateTime(timezone=True),server_default=func.now(),nullable=True),
-    )
-
-    return markes_table
