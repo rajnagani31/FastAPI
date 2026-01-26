@@ -16,6 +16,7 @@ class UserAuth(base):
     is_deleted = Column(Boolean, default=False)
     created_at = Column(String(100), server_default=func.now(), nullable=True)
     updated_at = Column(String(100), onupdate=func.now(), nullable=True)
+    last_login = Column(DateTime, nullable=True)
 
 class UserToken(base):
     __tablename__ = "user_toke"

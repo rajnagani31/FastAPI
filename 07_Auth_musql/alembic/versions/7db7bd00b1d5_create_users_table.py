@@ -28,7 +28,7 @@ def upgrade() -> None:
     sa.Column('session_id', sa.String(length=255), nullable=True),
     sa.Column('user_ip', sa.String(length=255), nullable=True),
     sa.Column('api_method', sa.String(length=50), nullable=True),
-    sa.Column('url', sa.String(), nullable=True),
+    sa.Column('url', sa.Text(), nullable=True),
     sa.Column('payload', sa.TEXT(), nullable=True),
     sa.Column('token', sa.String(length=255), nullable=True),
     sa.Column('created_at', sa.String(length=100), server_default=sa.text('now()'), nullable=True),
