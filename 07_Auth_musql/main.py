@@ -22,7 +22,7 @@ app = FastAPI()
 @app.middleware("http")
 async def simple_middleware(request: Request, call_next):
     # 🔹 REQUEST MIDDLEWARE
-    print("Before endpoint")
+    print("Before endpoint NO:1")
 
     response = await call_next(request)
 
@@ -37,7 +37,10 @@ async def simple_middleware(request: Request, call_next):
 
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
-    ip = request.client.host
+    print("Before endpoint NO 2")
+    ip = request.client.host  # type: ignore  
+
+    print("IP No 2:",ip)
 
     # # pseudo code
     # if too_many_requests(ip):

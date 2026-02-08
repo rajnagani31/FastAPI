@@ -23,7 +23,7 @@ ALGORITHM = "HS256"
 class StoreUserRequestMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
-        print("run middleware")
+        print("run middleware No 4")
         db: Session = next(get_db())
 
         # Headers
@@ -74,9 +74,9 @@ class StoreUserRequestMiddleware(BaseHTTPMiddleware):
 
             response = await call_next(request) # send request to api endpoint thet wait for a response
 
-            print("After endpoint")
+            print("After endpoint No 4")
             status = response.status_code
-            print("status",status)
+            print("status no 4",status)
             if status == 500:
                 return JSONResponse(content={"details":"Access forbidden: Admins only"}) # For generate error after response and send before client
             return response
@@ -86,7 +86,7 @@ class StoreUserRequestMiddleware(BaseHTTPMiddleware):
 
 
 async def demo_simple_middleware(request: Request, call_next):
-    print("Before endpoint")
+    print("Before endpoint NO 3")
     response = await call_next(request)
-    print("After endpoint")
+    print("After endpoint :3")
     return response
