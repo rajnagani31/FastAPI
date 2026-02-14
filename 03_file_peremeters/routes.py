@@ -87,7 +87,7 @@ def download_file(file_id: int, db: Session = Depends(get_db)):
     if not file_record:
         raise  HTTPException(status_code=404, detail="File not found")
 
-    # Create a file-like object
+    # Create a file-like object from the binary data
     file_stream = BytesIO(file_record.file_data)    
 
     # Send as downloadable file
