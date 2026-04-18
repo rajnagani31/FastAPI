@@ -56,8 +56,8 @@ class User(BaseModel):
     
 data = User(name='Alice', age=23, exam_fee=100, tution_fee=100)
 print(data.total_fee)
-print(data.model_dump())
-print(data.model_dump_json())
+print(type(data.model_dump()))
+print(type(data.model_dump_json()))
 print(data)
 
 from pydantic import BaseModel, field_validator
