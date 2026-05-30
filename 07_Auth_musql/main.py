@@ -11,7 +11,6 @@ from services.middleware import StoreUserRequestMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.responses import JSONResponse
 from services.middleware import demo_simple_middleware
-
 load_dotenv()
 
 # user_auth.base.metadata.create_all(bind=engin)

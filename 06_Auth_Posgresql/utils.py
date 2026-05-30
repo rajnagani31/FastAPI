@@ -3,12 +3,11 @@
 from config import config
 import datetime
 from jose import jwt
-from jwt import ExpiredSignatureError, InvalidTokenError
+from jose.exceptions import ExpiredSignatureError, JWTError
 from datetime import timedelta
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm,HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer, OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi import Depends, HTTPException, status
-from database import new_validate_token_table,database
-from jwt import ExpiredSignatureError, InvalidTokenError
+from database import new_validate_token_table, database
 
 
 bearer_scheme = HTTPBearer()
@@ -68,7 +67,7 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(beare
             )
         return user_id
     
-    except (InvalidTokenError, ExpiredSignatureError,IndexError,ValueError) as e:
+    except (JWTError, ExpiredSignatureError,IndexError,ValueError) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Invalid or expired token {e}",
@@ -83,9 +82,9 @@ def decode_refresh_token(token: str):
         return payload
     except ExpiredSignatureError as e:
         raise create_credentials_exception("Refresh token has expired") from e
-    except InvalidTokenError as e:
-        raise create_credentials_exception("teInvalid refresh token") from e
-    
+    except JWTError as e:
+        raise create_credentials_exception("Invalid refresh token") from e
+
 
 
 

@@ -1,5 +1,5 @@
 from jose import JWTError, jwt  
-from jwt import ExpiredSignatureError, InvalidTokenError
+from jose.exceptions import ExpiredSignatureError
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends, HTTPException, status, Request
 from model.user_auth import UserToken,UserAuth
@@ -80,7 +80,7 @@ async def verify_token(request : Request,credentials: HTTPAuthorizationCredentia
         request.user_role = user_role
         return user_id
     
-    except (InvalidTokenError, ExpiredSignatureError,IndexError,ValueError) as e:
+    except (JWTError, ExpiredSignatureError,IndexError,ValueError) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Invalid or expired token {e}",
@@ -94,6 +94,6 @@ def decode_refresh_token(token: str):
         return payload
     except ExpiredSignatureError as e:
         raise create_credentials_exception("Refresh token has expired") from e
-    except InvalidTokenError as e:
-        raise create_credentials_exception("teInvalid refresh token") from e
+    except JWTError as e:
+        raise create_credentials_exception("Invalid refresh token") from e
     
