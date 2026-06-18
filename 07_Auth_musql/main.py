@@ -55,7 +55,7 @@ async def register_middleware(request: Request, call_next):
     return await demo_simple_middleware(request, call_next)
 
 
-app.add_middleware(StoreUserRequestMiddleware)
+# app.add_middleware(StoreUserRequestMiddleware)
 
 
 app.include_router(auth_router)
