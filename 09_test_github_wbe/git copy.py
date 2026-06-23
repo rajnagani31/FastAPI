@@ -26,6 +26,19 @@ def b(func):
         func()
     return wrapper
 
+def a(func):
+    def wrapper():
+        print('a')
+        func()
+    return wrapper
+
+def b(func):
+    def wrapper():
+        print('b')
+        func()
+    return wrapper
+
+    
 @b
 @a
 def c():
