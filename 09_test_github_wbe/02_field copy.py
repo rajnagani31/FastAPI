@@ -7,9 +7,6 @@ class Employee(BaseModel):
     age: int = Field(..., gt=0, lt=100, description="Employee age must be between 0 and 150", )
     salary: float = Field(..., gt=0, description="Employee salary must be greater than 0", example=50000.0) #type: ignore
 
-employee = {"id": 1, "name": "Raj", "age": 30, "salary": 50000.0}
-employee_data = Employee(**employee)
-print('data:',employee_data)
 
 
 # decorator
