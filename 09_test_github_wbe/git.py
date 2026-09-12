@@ -20,14 +20,7 @@ def a(func):
         func()
     return wrapper
 
-def b(func):
-    def wrapper():
-        print('b')
-        func()
-    return wrapper
 
-@b
-@a
 def c():
     print('c')
 
